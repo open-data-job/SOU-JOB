@@ -1,0 +1,1199 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head><title>
+	
+        图书馆书目检索系统
+    
+</title><link id="ctl00_linkcss" href="css/style.css" rel="stylesheet" type="text/css" />
+
+    <script type="text/javascript" src="js/prototype.js"></script>
+
+    <script type="text/javascript" src="js/common.js"></script>
+
+    <script type="text/javascript" src="js/autocomplete.js"></script>
+
+    <script type="text/javascript">
+        var _islog = false;
+        var _suburl = "";
+        var shurl = _suburl + "user/mysearchhistory.aspx";
+        function ilogin()
+        {
+            new internallogin(iloginsuccess,_suburl);
+        }
+        function islogin()
+        {
+            $('islogoutspan').hide();
+            $('isloginspan').show();
+            $('loginmsg').show();
+            _islog = true;
+            /*更新评分信息*/
+            if ($('pingfencontent') != null)
+                getscore();
+           /*更新检索历史提示登录信息*/
+           if ($('sh_login_hint') != null)
+                $('sh_login_hint').hide();
+            /*如果是bookinfo则显示预约信息*/
+            var url1 = window.location.pathname;
+            if (url1.indexOf("bookinfo.aspx") >=0 )
+            {
+                //检查系统预约参数
+                if(0 == 0)
+                {
+                    listbookwithresv();
+                }
+            }
+        }
+        function islogout()
+        {
+            $('islogoutspan').show();
+            $('isloginspan').hide();
+            $('loginmsg').hide();
+            _islog = false;
+        }
+        function iloginsuccess()
+        {
+            var wurl = window.location.href;
+            var rurlIndex;
+            if ((rurlIndex = wurl.indexOf("login.aspx?ReturnUrl=")) != -1)
+            {
+                var rurl = decodeURIComponent(wurl.substr(rurlIndex + 21));
+                if (isie())
+                    window.location.href = rurl;
+            }
+            islogin();
+//            if (getscore != undefined && getscore != null && typeof getscore == 'function')
+//                getscore();
+        }
+        function iloginforsh()
+        {
+            islogin();
+            gotosh();
+        }
+        function ilogout()
+        {
+            internallogout(null,_suburl);
+            _islog = false;
+        }
+        function ilogout_callback()
+        {
+            islogout();
+        }
+        function gotosh()
+        {
+           if (_islog == false)
+           {
+                new internallogin(iloginforsh,_suburl);
+           }
+           else
+           {
+                window.location.href = shurl;
+           } 
+        }
+          
+            function caslogin()
+            {
+              window.location.reload();
+            }
+          
+    </script>
+
+</head>
+<body>
+    <!-- 头部-->
+    <div id="header" class="clearFix">
+        <div id="headerlogo">
+            <img id="ctl00_headerimg" src="images/header.gif" border="0" />
+        </div>
+        <div id="headertext">
+            <span id="ctl00_sitenamelbl">图书馆公共目录检索系统IV V1.0</span>
+        </div>
+        <div id="headermenu" class="clearFix" style="width: 45%">
+            <div class="fl" style="width: 56%">
+                <span id="loginmsg" style="display: none;">
+                    <!--<marquee width="150px" align="middle" behavior="scroll" scrollamount="2"></marquee>-->
+                    登录成功。 如果您使用的是公共电脑，请在使用完毕后，务必退出登录，切记！
+                </span>
+            </div>
+            <div class="fr" style="width: 42%">
+                <a href="setlanguage.aspx?lang=zh-cn"><font color="#ff9933">中文</font></a>&nbsp;
+                <a href="setlanguage.aspx?lang=en-us"><font color="#ff9933">English</font></a> &nbsp;
+                <a href="setlanguage.aspx?lang=ja-jp"><font color="#ff9933">日本語</font></a> &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+                <span id="islogoutspan" style="display: none"><a href="javascript:void(0)" onclick="ilogin()"
+                    class="redlink">
+                    登录
+                </a></span><span id="isloginspan" style="display: none">
+                 
+                        <a href="user/logout.aspx" class="redlink">
+                     退出
+                </a></span>&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp; <a href="javascript:gotosh()">
+                    我的检索历史
+                </a>
+                <br />
+                今天是
+                &nbsp;&nbsp;&nbsp;&nbsp;<span id="ctl00_nowlbl">2018年03月15日 星期四</span>
+            </div>
+        </div>
+    </div>
+    <!--内容-->
+    <div id="content">
+        
+<script type="text/javascript">
+var searchurl = "";
+window.onload=function() {
+    if(document.getElementById("ctl00_ContentPlaceHolder1_notfoundcountlbl")!=null&&document.getElementById("ctl00_ContentPlaceHolder1_notfoundcountlbl").innerHTML==0)
+    {
+        cx_showpage(1);
+        fz_showpage(1);
+    }
+  }
+  
+  
+function cx_showpage(page)
+{
+    if (searchurl == "")
+        //searchurl = $F('ctl00_ContentPlaceHolder1_thissearchhf');
+        searchurl = $F('ctl00_ContentPlaceHolder1_ucnavsearchurl');
+    var tmpparams = searchurl;
+    var params;
+    var pageexist_reg = new RegExp("page=[0-9]*","ig");
+    if(pageexist_reg.test(tmpparams))
+    {
+        params = tmpparams.replace(pageexist_reg,"page="+page);
+    }
+    else
+    {
+        params = tmpparams + "&page=" + page;
+    }
+    params = params + "&r=" + Math.random();
+    searchurl = params;
+    params = encodeURIComponent(params);
+    var cx_showpageAjax = new Ajax.Request(
+        'dztsjs/search_cxAjax.aspx',
+        {
+            method:'get',
+            parameters:params,
+            onSuccess:cx_showpageResponse
+        }
+    );
+}
+function cx_showpageResponse(response)
+{
+    var result = response.responseText;
+    var r1 = result.indexOf("<div id=\"searchresultpage_cx\">");
+    var r2 = result.lastIndexOf("</div>");
+    if (r1 == -1)
+    {
+        if (result == "1")
+            $('nofoundcx').innerHTML = '超星检索暂停服务！请稍侯再试！';
+    }
+    else
+    {
+        var result2 = result.substr(r1+30,r2-r1-30);
+        $('nofoundcx').innerHTML = result2;
+    }
+}
+
+function fz_showpage(page)
+{
+    
+    if (searchurl == "")
+        //searchurl = $F('ctl00_ContentPlaceHolder1_thissearchhf')
+        searchurl = $F('ctl00_ContentPlaceHolder1_ucnavsearchurlfz');
+    var tmpparams = searchurl;
+    var params;
+    var pageexist_reg = new RegExp("page=[0-9]*","ig");
+    if(pageexist_reg.test(tmpparams))
+    {
+        params = tmpparams.replace(pageexist_reg,"page="+page);
+    }
+    else
+    {
+        params = tmpparams + "&page=" + page;
+    }
+    searchurl = params;
+    params = params + "&r=" + Math.random();
+    params = encodeURIComponent(params);
+    var fz_showpageAjax = new Ajax.Request(
+        'dztsjs/search_fz5Ajax.aspx',
+        {
+            method:'get',
+            parameters:params,
+            onSuccess:fz_showpageResponse
+        }
+    );
+}
+function fz_showpageResponse(response)
+{
+    var result = response.responseText;
+    var r1 = result.indexOf("<div id=\"searchresultpage_fz\">");
+    var r2 = result.lastIndexOf("</div>");
+    if (r1 == -1)
+    {
+        if (result == "1")
+            $('nofoundfz').innerHTML = '方正检索暂停服务！请稍侯再试！';
+    }
+    else
+    {
+        var result2 = result.substr(r1+30,r2-r1-30);
+        $('nofoundfz').innerHTML = result2;
+    }
+}
+  
+  
+  
+//-------------------------------20101209 add upon 典藏检索无结果时显示超星方正检索结果-------------------------------------------------------------------------------------------------------------------------------
+var autocompleter;
+loadingfacetimg = new Image();
+loadingfacetimg.src = "images/loading.gif";
+var loadingfacet = "<div><span style=\"color:#f87600\"><img id=\"loadingfacetimg\" src=\"\"/>&nbsp;正在载入,请稍候...</span></div>";
+
+var saveline = 0;
+function gotopage(p)
+{
+    
+}
+function changepoint(pointvalue)
+{
+    if (autocompleter != null)
+    {
+        autocompleter._url = 'showsearchsuggestionAjax.aspx?st='+pointvalue;
+    }
+    else
+    {
+       new AutoCompleter('acdiv','ctl00_ContentPlaceHolder1_keywordstb','showsearchsuggestionAjax.aspx?st='+pointvalue);
+    }
+}
+function checkForResearch()
+{
+    if (!check())
+            return false;
+    createLoadingDiv("正在检索，请稍候...");
+    return true;
+}
+function check()
+{
+    if ($F('ctl00_ContentPlaceHolder1_keywordstb').strip().length < 1)
+    {
+        $('ctl00_ContentPlaceHolder1_keywordstb').innerText = '';
+        $('ctl00_ContentPlaceHolder1_keywordstb').focus();
+        return false;
+    }
+    else
+    {
+        createLoadingDiv("正在检索，请稍候...");
+        return true;
+    }
+}
+function pailie(page)
+{
+    if (searchurl == "")
+        searchurl = $F('ctl00_ContentPlaceHolder1_thissearchhf')
+    var sfvalue = $('sortddl').options[$('sortddl').selectedIndex].value;
+    var obvalue = $('orderbyddl').options[$('orderbyddl').selectedIndex].value;
+    var tmpparams = searchurl;
+    var sf_reg = new RegExp("sf=[^&]*","ig");
+    var ob_reg = new RegExp("ob=[^&]*","ig");
+    tmpparams = tmpparams.replace(sf_reg,"sf=" + sfvalue);
+    tmpparams = tmpparams.replace(ob_reg,"ob=" + obvalue);
+    searchurl = tmpparams;
+    showpagefl(page);
+}
+var loadingForHandleDiv;
+var showfacet = function()
+{
+    $('searchfacet').down(0).next(0).innerHTML = loadingfacet;
+    $('loadingfacetimg').src = loadingfacetimg.src;
+    var params = encodeURI($F('ctl00_ContentPlaceHolder1_thissearchhf'));
+    var showfacetAjax = new Ajax.Request(
+        'showfacetforsearchAjax.aspx',
+        {
+            method:'get',
+            parameters:params,
+            onComplete: showfacetResponse
+        }
+    );
+}
+function showfacetResponse(response)
+{
+    var result = response.responseText;
+    var r1 = result.indexOf("<div id=\"searchfacet\">");
+    var r2 = result.lastIndexOf("</div>");
+    if (r1 == -1)
+    {
+         $('searchfacet').down(0).next(0).innerHTML = "";
+    }
+    else
+    {
+        var result2 = result.substr(r1+22,r2-r1-22);
+        $('searchfacet').down(0).next(0).innerHTML = result2;
+    }
+}
+var loadingForHandleFLDiv;
+function showpagefl(page)
+{
+
+    if (searchurl == "")
+        searchurl = $F('ctl00_ContentPlaceHolder1_thissearchhf')
+    loadingForHandleFLDiv = createLoadingDiv("正在处理，请稍候...");
+    var tmpparams = searchurl;
+    var params;
+    var pageexist_reg = new RegExp("page=[0-9]*","ig");
+    if(pageexist_reg.test(tmpparams))
+    {
+        params = tmpparams.replace(pageexist_reg,"page="+page);
+    }
+    else
+    {
+        params = tmpparams + "&page=" + page;
+    }
+    searchurl = params;
+    params = encodeURIComponent(params);
+    var showpageAjax = new Ajax.Request(
+        'showpageforlucenesearchAjax.aspx',
+        {
+            method:'get',
+            parameters:params,
+            onComplete:showpageflResponse
+        }
+    );
+}
+function showpageflResponse(response)
+{
+    var result = response.responseText;
+    var r1 = result.indexOf("<div id=\"searchresultpagefl\">");
+    var r2 = result.lastIndexOf("</div>");
+    if (r1 == -1)
+    {
+        $('searchresultpagefl').innerHTML = '无此记录！';
+    }
+    else
+    {
+        var result2 = result.substr(r1+29,r2-r1-29);
+        $('searchresultpagefl').innerHTML = result2;
+    }
+    loadingForHandleFLDiv.remove();
+    saveline = 0;
+}
+var showfacetfl = function(reqkey)
+{
+    var link = 'showfacetforlucenesearchAjax.aspx';
+    var params;
+    if (reqkey)
+    {
+        params = encodeURIComponent($F('ctl00_ContentPlaceHolder1_thissearchhf') + '&reqkey=' + reqkey);
+    }
+    else
+    {
+        $('searchfacetfl').down(0).next(0).innerHTML = loadingfacet;
+        $('loadingfacetimg').src = loadingfacetimg.src;
+        params = encodeURIComponent($F('ctl00_ContentPlaceHolder1_thissearchhf'));
+    }
+    var showfacetAjax = new Ajax.Request(
+        link,
+        {
+            method:'get',
+            parameters:params,
+            onComplete: showfacetflResponse
+        }
+    );
+}
+function showfacetflResponse(response)
+{
+    var result = response.responseText;
+    //alert(result);
+    var r1 = result.indexOf("<div id=\"searchfacetfl\">");
+    var r2 = result.lastIndexOf("</div>");
+    var finished = 0;
+    if (result.startWith('1'))
+        finished = 1 ;
+    else
+        finished = 0;
+    if (r1 == -1)
+    {
+         if (finished == 0)
+         {
+            $('searchfacetfl').down(0).next(0).innerHTML = loadingfacet;
+            $('loadingfacetimg').src = loadingfacetimg.src; 
+         }
+         else
+            $('searchfacetfl').down(0).next(0).innerHTML = "";
+    }
+    else
+    {
+        var result2 = result.substr(r1+24,r2-r1-24);
+        if (finished == 0)
+         {
+            $('searchfacetfl').down(0).next(0).innerHTML = loadingfacet + result2;
+            $('loadingfacetimg').src = loadingfacetimg.src; 
+         }
+         else
+            $('searchfacetfl').down(0).next(0).innerHTML = result2;
+    }
+    if (finished == 0)
+    {
+        //取出key
+        var reqkey = result.substr(1,36);
+        setTimeout("showfacetfl('"+ reqkey + "')",1000);
+    }
+}
+function savethis(obj)
+{
+    if (obj.checked)
+    {
+        saveline_checkline();
+        //$(obj).up(0).up(0).className = $(obj).up(0).up(0).className + ' selected';
+    }
+    else
+    {
+        saveline_lback();
+        //$(obj).up(0).up(0).className = $(obj).up(0).up(0).className.replace(' selected','');
+    }
+    saveline_showmsg(obj);
+}
+function saveline_checkline()
+{
+    saveline++;
+}
+function saveline_lback()
+{
+    saveline--;
+}
+function saveline_init()
+{
+    saveline=0;
+    $('bodl_detail_msgnote').style.display = 'none'
+}
+function saveline_showmsg(obj)
+{
+    if (saveline <= 0)
+    {
+        $('bodl_detail_msgnote').style.display = 'none';
+        return;
+    }
+    var content = "您当前选择了" + saveline + "条记录" + "<br/>";
+    
+    content += "您可以" + "<a href=\"javascript:ctsavedisk()\" class=\"underline\">保存</a>&nbsp;&nbsp;<a href=\"javascript:ctsendemail()\" class=\"underline\">发Email</a><br/>";
+    
+    content += "<a href=\"javascript:cancelall()\" class=\"underline\">取消已选</a>"
+    $('bodl_detail_msgnote').down(1).innerHTML = content;
+    //orderline_alertmsg() + "<br/><a href=\"javascript:$('').click();\" style=\"text-decoration:underline;\">保存</a>";
+    if ($('bodl_detail_msgnote').style.display == 'none')
+    {
+        $('bodl_detail_msgnote').style.display = '';
+    }
+     var offsets = Position.positionedOffset($(obj));
+     var top = offsets[1];
+     var left = offsets[0];
+     $('bodl_detail_msgnote').style.top = top + "px";
+     $('bodl_detail_msgnote').style.marginLeft = left + 10 + "px";
+} 
+function chooseall(obj)
+{
+    var cbs = document.getElementsByName("searchresult_cb");
+    for (i = 0;i < cbs.length;i++)
+        cbs[i].checked = obj.checked;
+    if (obj.checked)
+    {
+        saveline = cbs.length;
+        saveline_showmsg(obj);
+    }
+    else
+    {
+        saveline = 0;
+        saveline_showmsg(obj);
+    }
+}
+function cancelall()
+{
+    $('searchresult_all_cb').checked = false;
+    var cbs = document.getElementsByName("searchresult_cb");
+    for (i = 0;i < cbs.length;i++)
+        cbs[i].checked = false;
+    saveline = 0;
+    $('bodl_detail_msgnote').style.display = 'none';
+}
+function cancelct()
+{
+    var content = "您当前选择了" + saveline + "条记录" + "<br/>";
+    
+            content += "您可以<a href=\"javascript:ctsavedisk()\" class=\"underline\">保存</a>&nbsp;&nbsp;<a href=\"javascript:ctsendemail()\" class=\"underline\">发Email</a><br/>";
+    
+    content += "<a href=\"javascript:cancelall()\" class=\"underline\">取消已选</a>"
+    $('bodl_detail_msgnote').down(1).innerHTML = content;
+}
+function ctsendemail()
+{
+    var content = "我的邮箱:<br/><input type=\"text\" name=\"emailtb\" id=\"emailtb\" size=18><br/>";
+    content += "<a href=\"javascript:sendemail()\" class=\"underline\">发送</a>&nbsp;&nbsp;<a href=\"javascript:cancelct()\" class=\"underline\">取消</a>";
+    $('bodl_detail_msgnote').down(1).innerHTML = content;
+    $('emailtb').focus();
+}
+function ctsavedisk()
+{
+    var content = "请选择文件类型：<br/><select id=\"savefileselect\"><option value=\"excel\">excel</option><option value=\"txt\">txt</option></select>";
+    content += "&nbsp;&nbsp;<a href=\"javascript:savedisk()\" class=\"underline\">保存</a>&nbsp;&nbsp;<a href=\"javascript:cancelct()\" class=\"underline\">取消</a>";
+    $('bodl_detail_msgnote').down(1).innerHTML = content;
+}
+function getallselected()
+{
+    var result = '';
+    var cbs = document.getElementsByName("searchresult_cb");
+    for (i = 0;i < cbs.length;i++)
+        if (cbs[i].checked)
+            result += cbs[i].value + ",";
+    return result;
+}
+var loadingForSaveDiv;
+function sendemail()
+{
+    loadingForSaveDiv = createLoadingDiv("正在处理，请稍候...");
+    var params = "c=" + getallselected() + "&e=" + $('emailtb').value + "&l=-1";
+    var showfacetAjax = new Ajax.Request(
+        'sendemailforsearchresultAjax.aspx',
+        {
+            method:'get',
+            parameters:params,
+            onComplete: sendemailResponse
+        }
+    );
+}
+function sendemailResponse(response)
+{
+    var result = response.responseText;
+    loadingForSaveDiv.remove();
+    if (result == "1")
+    {
+        alert("已发送到您的邮箱，请注意查收！");
+    }
+    else
+    {
+        alert("发送失败！");
+    }
+    cancelct();
+}
+function savedisk()
+{
+    var filetype = $('savefileselect').options[$('savefileselect').selectedIndex].value;
+    var exporturl = "exportsearchresult.aspx?c=" + getallselected() + "&ft=" + filetype + "&l=-1";
+    window.open(exporturl);
+}
+function showdetailfacet(obj)
+{
+    if ($(obj).innerHTML == '收起')
+    {
+        $(obj).up(0).next(0).hide();
+        $(obj).innerHTML = '展开';
+    }
+    else
+    {
+        $(obj).up(0).next(0).show();
+        $(obj).innerHTML = '收起';
+    }
+}
+</script>
+ 
+<!--菜单 -->
+     <div id="pagemenu">
+         
+                <ul>
+            
+                <li>
+                    <a href='search.aspx' class="select">目录检索</a>
+                </li>
+            
+                <li>
+                    <a href='clsbrowse.aspx' >分类导航</a>
+                </li>
+            
+                <li>
+                    <a href='book_rank.aspx' >读书指引</a>
+                </li>
+            
+                <li>
+                    <a href='xstb.aspx' >新书通报</a>
+                </li>
+            
+                <li>
+                    <a href='readerrecommend.aspx' >读者荐购</a>
+                </li>
+            
+                <li>
+                    <a href='overduebooks_f.aspx' >提醒服务</a>
+                </li>
+            
+                <li>
+                    <a href='user/userinfo.aspx' >我的图书馆</a>
+                </li>
+            
+                <li>
+                    <a href='http://www.lib.szu.edu.cn' >图书馆首页</a>
+                </li>
+            
+                
+                </ul>
+              
+    </div>
+    <div id="pagesubmenu">
+        
+                <ul>
+            
+                <li>
+                    <a href="search.aspx" class="select">快速检索</a>
+                </li>
+            
+                <li>
+                    <a href="search_more.aspx" >高级检索</a>
+                </li>
+            
+                <li>
+                    <a href="otcss/search_zn.aspx" >主题词智能检索</a>
+                </li>
+            
+                </ul>
+              
+    </div>
+
+ <form name="aspnetForm" method="post" action="searchresult.aspx?title_f=%ufffd%ufffd%u0368&amp;" id="aspnetForm">
+<input type="hidden" name="__VIEWSTATE" id="__VIEWSTATE" value="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" />
+
+<input type="hidden" name="__VIEWSTATEGENERATOR" id="__VIEWSTATEGENERATOR" value="F15B2DC6" />
+<input type="hidden" name="__EVENTVALIDATION" id="__EVENTVALIDATION" value="/wEWJQKx7qKoAwLjlsagDAKF38vSAgLI2KbhBgLgrL+bCwKEwpvgAQKqoeKXCwKLleDOBQLN7dvtCAK7w4DNAQL5yLiyDwK7utrjDgLw0cOSBAL55JmJDgL+qfvfAwLmgJ6hAwLo/MCIAwKt4fnGAwKs4fnGAwKv4fnGAwKu4fnGAwKp4fnGAwKo4fnGAwKr4fnGAwK64fnGAwK14fnGAwKt4aXUBQKs4aXUBQKv4aXUBQKu4aXUBQKp4aXUBQKo4aXUBQKr4aXUBQK64aXUBQK14aXUBQKL4q7sCQLjq7ebAR3zOE5eP1LQwoswLbqDiGcJ41+j" />
+     <input type="hidden" name="ctl00$ContentPlaceHolder1$lastsearchhf" id="ctl00_ContentPlaceHolder1_lastsearchhf" value="dt=ALL&amp;cl=ALL&amp;dept=ALL&amp;sf=M_PUB_YEAR&amp;ob=DESC&amp;page=1&amp;dp=20&amp;sm=table" />
+     <input type="hidden" name="ctl00$ContentPlaceHolder1$thissearchhf" id="ctl00_ContentPlaceHolder1_thissearchhf" value="title_f=%b9%b5%cd%a8&amp;" />
+ 
+
+<!-- 电子图书检索功能 begin-->
+<div id="searchresulttabmenu">
+    
+<!--检索导航 begin-->
+<div id="searchresulttab">
+
+    <script type="text/javascript">
+        var srtab_a = new Array();
+        srtab_a[0] = 'searchresultmain';
+        srtab_a[1] = 'srtab_cx_frame_div';
+        srtab_a[2] = 'srtab_fz_frame_div';
+        var srtab_url = new Array();
+        srtab_url[0] = '';
+        srtab_url[1] = 'dztsjs/search_cx.aspx?k=title&v=%b9%b5%cd%a8&r=167115570';
+        srtab_url[2] = 'dztsjs/search_fz5.aspx?k=title&v=%b9%b5%cd%a8&r=1245776165';
+        var srtab_frame = new Array();
+        srtab_frame[0] = '';
+        srtab_frame[1] = 'srtab_cx_frame';
+        srtab_frame[2] = 'srtab_fz_frame';
+        var srtab_hasset = new Array();
+        srtab_hasset[0] = 1;
+        srtab_hasset[1] = 0;
+        srtab_hasset[2] = 0;
+        function sr_settab(tabobj,contentindex)
+        {
+            var liobjs = $(tabobj).up(0).getElementsByTagName("li");
+            for (i = 0;i < liobjs.length;i++)
+            {
+                if (liobjs[i].id == tabobj.id)
+                {
+                    liobjs[i].className = 'on';
+                    if ($(srtab_a[i]) != undefined)
+                        $(srtab_a[i]).show();
+                }
+                else
+                {
+                    liobjs[i].className = 'off';
+                    if ($(srtab_a[i]) != undefined)
+                        $(srtab_a[i]).hide();
+                }
+            }
+            for (i = 0;i < srtab_a.length;i++)
+            {
+                if (i != contentindex)
+                {
+                    if ($(srtab_a[i]) != undefined)
+                        $(srtab_a[i]).hide();
+                }
+                else
+                {
+                    if ($(srtab_a[i]) != undefined)
+                    {
+                        $(srtab_a[i]).show();
+                        if (srtab_frame[i] != '')
+                        {
+                            if (srtab_hasset[i] == 0)
+                            {
+                                $(srtab_frame[i]).src = srtab_url[i];
+                                srtab_hasset[i] = 1;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <ul>
+        <li id="srtab_gc" class="on" onclick="sr_settab(this,0)"><a>馆藏文献</a></li>
+        <li id="ctl00_ContentPlaceHolder1_SearchNav1_srtab_cx" class="off" onclick="sr_settab(this,1)">&nbsp;|&nbsp;&nbsp;<a>超星图书</a></li>
+        <li id="ctl00_ContentPlaceHolder1_SearchNav1_srtab_fz" class="off" onclick="sr_settab(this,2)">&nbsp;|&nbsp;&nbsp;<a>方正图书</a></li>
+    </ul>
+    <div id="searchresulttabcontent">
+        <div id="srtab_cx_frame_div" style="display: none;">
+            <div id="search_cx_loading">
+                <img src="images/loading.gif" />正在加载中,请稍候...</div>
+            <iframe name="srtab_cx_frame" style="height: 800px;" id="srtab_cx_frame" frameborder="0"
+                src="" class="frameNewBook" style="height: 700px" onload='SetCwinHeight("srtab_cx_frame");'
+                scrolling="no"></iframe>
+        </div>
+        <div id="srtab_fz_frame_div" style="display: none;">
+            <div id="search_fz_loading">
+                <img src="images/loading.gif" />正在加载中,请稍候...</div>
+            <iframe name="srtab_fz_frame" style="height: 900px;" id="srtab_fz_frame" frameborder="0"
+                src="" class="frameNewBook" style="height: 700px" onload='SetCwinHeight("srtab_fz_frame");'
+                scrolling="no"></iframe>
+        </div>
+    </div>
+</div>
+<!--检索导航 end-->
+
+</div>
+<!-- 电子图书检索功能 end-->
+ <div id="searchresultmain">
+    <div id="searchresultpoint">
+        <div class="searchpointdiv">
+        检索：<select name="ctl00$ContentPlaceHolder1$searchtypeddl" id="ctl00_ContentPlaceHolder1_searchtypeddl" onchange="changepoint(this.options[this.selectedIndex].value)">
+	<option selected="selected" value="ANYWORDS">任意字段关键词</option>
+	<option value="TITLEFORWARD">题名前方一致</option>
+	<option value="TITLEANY">题名内关键词</option>
+	<option value="AUTHORFORWARD">著者前方一致</option>
+	<option value="AUTHORANY">著者内关键词</option>
+	<option value="KEYWORDFORWARD">内容主题词</option>
+	<option value="PUBLISHERFORWARD">出版者名称</option>
+	<option value="CLCFORWARD">中图法分类号</option>
+	<option value="ISBNFORWARD">ISBN</option>
+	<option value="ISSNFORWARD">ISSN</option>
+	<option value="CALLNOFORWARD">索取号</option>
+
+</select>&nbsp;
+            <input name="ctl00$ContentPlaceHolder1$keywordstb" type="text" maxlength="250" id="ctl00_ContentPlaceHolder1_keywordstb" class="textbox" onkeypress="if (event.keyCode=='13') {$('ctl00_ContentPlaceHolder1_searchbtn').click();event.returnValue =false;}" autocomplete="off" /><input type="submit" name="ctl00$ContentPlaceHolder1$searchbtn" value="新检索" onclick="return check();" id="ctl00_ContentPlaceHolder1_searchbtn" class="btn" /><input type="submit" name="ctl00$ContentPlaceHolder1$researchbtn" value="在结果中检索" onclick="return checkForResearch();" id="ctl00_ContentPlaceHolder1_researchbtn" class="btn" />
+            <input type="button" class="btn" value="返回主检索界面" onclick="javascript:window.location='search.aspx'"/>
+        </div>
+        <div id="acdiv" class="autocompletediv">
+         </div>
+    </div>
+    <div id="searchcondition" class="searchcondition">
+        <span>检索条件：<span id="ctl00_ContentPlaceHolder1_conditionlbl">题名前方一致=<font color="#ff0000">沟通</font>&nbsp;&nbsp;</span>
+        </span>&nbsp;&nbsp;&nbsp;<span>结果数：<span id="ctl00_ContentPlaceHolder1_countlbl"><font color="Red">162</font></span>
+        </span>&nbsp;<a href="javascript:void(0)" title="此检索条件下的结果RSS源" style="display:none"><img src="images/rss.gif"/></a>
+    </div>
+    <div id="searchresult" class="clearFix">
+        
+            <div id="searchresultpagefl" class="left">
+            <div class="pd tbl">第<span class="rf"><span id="ctl00_ContentPlaceHolder1_dplblfl1">1</span></span>/<span id="ctl00_ContentPlaceHolder1_gplblfl1">9</span>页&nbsp;上一页&nbsp;
+                    <a id="ctl00_ContentPlaceHolder1_nexthlfl1" onclick="showpagefl(2)" href="javascript:void(0)">下一页</a>&nbsp;转到第<select name="ctl00$ContentPlaceHolder1$gotoddlfl1" id="ctl00_ContentPlaceHolder1_gotoddlfl1" onchange="showpagefl(this[this.selectedIndex].value)">
+	<option selected="selected" value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5">5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	<option value="9">9</option>
+
+</select>页&nbsp;&nbsp;&nbsp;排序方式：<select id="sortddl">
+                        <option value="M_TITLE" selected="selected">题&nbsp;&nbsp;名</option>
+                        <option value="M_PUBLISHER">出版社</option>
+                        <option value="M_PUB_YEAR">出版年</option>
+                        <option value="M_AUTHOR">著者</option>
+                        <option value="M_SUBJECT">主题词</option>
+                        <option value="M_CLC">分类号</option>
+                        <option value="M_CATALOGDATE">进馆日期</option>
+                    </select>
+                    &nbsp;<select id="orderbyddl">
+                        <option value="ASC" selected="selected">升序排列</option>
+                        <option value="DESC">降序排列</option>
+                    </select>&nbsp;
+                <input type="button" value="排列" onclick="pailie(1)" title="排列" />
+                 <script type="text/javascript">
+                    for(i=0;i<$('sortddl').options.length;i++)
+                    {
+                        if ($('sortddl').options[i].value == '')
+                        {
+                            $('sortddl').options[i].selected = true;
+                            break;
+                        }       
+                    }
+                    for(i=0;i<$('orderbyddl').options.length;i++)
+                    {
+                        if ($('orderbyddl').options[i].value == '')
+                        {
+                            $('orderbyddl').options[i].selected = true;
+                            break;
+                        }       
+                    }
+                </script>
+            </div>
+            <div>
+                <ul class="msgnote" id="bodl_detail_msgnote" style="display:none;">
+                    <li class="top"></li>
+                    <li class="body"></li>
+                    <li class="bottom"></li>
+               </ul>
+                
+                              <table cellpadding="4" width="98%" border="1" class="tb">
+                              <thead class="tbhead">
+                                <tr>
+                                   <td width="5%">序号<input type="checkbox" title="全选/全不选" name="searchresult_all_cb" id="searchresult_all_cb" onclick="chooseall(this);"/></td>
+                                  <td width="33%">题名</td>
+                                  <td width="19%">责任者</td>
+                                  <td width="13%">出版者</td>
+                                  <td width="7%">出版年</td>
+                                  <td width="7%">索取号</td>
+                                  <td width="5%">馆藏</td>
+                                  <td width="5%">可借</td>
+                                  <td width="6%">相关资源</td>
+                                 </tr>
+                               </thead>
+                               <tbody>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2988655" onclick="savethis(this);"/>1</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2988655" target="_blank">沟通的艺术＝How to develop courage and make speaking</a></span></td>
+                                  <td>(美) 戴尔·卡耐基著；纪飞等编译</td>
+                                  <td>清华大学出版社</td>
+                                  <td>2017</td>
+                                  <td class="tbr">H319.4:C912.1/K12a2</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">2</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2939144" onclick="savethis(this);"/>2</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2939144" target="_blank">沟通其实很简单：9条法则教你达到沟通目的＝What more can I say?：why communication fails and what to do about it</a></span></td>
+                                  <td>(美)黛安娜·布赫(Dianna Booher)著；郭紫娟译</td>
+                                  <td>电子工业出版社</td>
+                                  <td>2016</td>
+                                  <td class="tbr">C912.11/B97</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">2</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2905640" onclick="savethis(this);"/>3</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2905640" target="_blank">团队管理方法论</a></span></td>
+                                  <td>成正心著</td>
+                                  <td>电子工业出版社</td>
+                                  <td>2016</td>
+                                  <td class="tbr">F272.90/C52</td>
+                                  <td class="tbr">9</td>
+                                  <td class="tbr">6</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2872089" onclick="savethis(this);"/>4</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2872089" target="_blank">谁说我们不能生气：沟通大师福田健教学生气的艺术</a></span></td>
+                                  <td>(日) 福田健著；于雷译</td>
+                                  <td>北京理工大学出版社</td>
+                                  <td>2016</td>
+                                  <td class="tbr">B842.6/F75c</td>
+                                  <td class="tbr">2</td>
+                                  <td class="tbr">1</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2808413" onclick="savethis(this);"/>5</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2808413" target="_blank">沟通与汇聚：第五届中国性研究学术研讨会 [海外中文图书]</a></span></td>
+                                  <td>黄盈盈，潘绥铭主编</td>
+                                  <td>1908有限公司</td>
+                                  <td>2016</td>
+                                  <td class="tbr">C913.14/H79</td>
+                                  <td class="tbr">2</td>
+                                  <td class="tbr">0</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2996373" onclick="savethis(this);"/>6</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2996373" target="_blank">沟通为王：奢侈品销售冠军的100个利器</a></span></td>
+                                  <td>刘春海主编</td>
+                                  <td>广东经济出版社</td>
+                                  <td>2015</td>
+                                  <td class="tbr">F713.3/L71d</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">2</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2875295" onclick="savethis(this);"/>7</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2875295" target="_blank">沟通与超越：心理咨询技术解析及案例评析</a></span></td>
+                                  <td>姚斌著</td>
+                                  <td>人民卫生出版社</td>
+                                  <td>2015</td>
+                                  <td class="tbr">B841/Y35</td>
+                                  <td class="tbr">2</td>
+                                  <td class="tbr">1</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2872067" onclick="savethis(this);"/>8</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2872067" target="_blank">沟通的力量：强力词汇激活社交潜能＝How to use power phrases to say what you mean, mean what you say, & get what you want</a></span></td>
+                                  <td>(美) 梅里尔·卢尼昂(Meryl Runion)著；罗汉, 陈善其, 喻国平译</td>
+                                  <td>格致出版社</td>
+                                  <td>2015</td>
+                                  <td class="tbr">B842.5/L82</td>
+                                  <td class="tbr">2</td>
+                                  <td class="tbr">1</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2642582" onclick="savethis(this);"/>9</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2642582" target="_blank">沟通心理学＝The psychology of communication</a></span></td>
+                                  <td>郑日昌著</td>
+                                  <td>北京师范大学出版社</td>
+                                  <td>2015</td>
+                                  <td class="tbr">C912.62/Z58</td>
+                                  <td class="tbr">2</td>
+                                  <td class="tbr">2</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2471753" onclick="savethis(this);"/>10</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2471753" target="_blank">沟通的技术：让交流、会议与演讲更有效</a></span></td>
+                                  <td>(美) Russ Unger, Brad Nunnally, Dan Willis著；王雅欣, 吴铭, 邹鹄译</td>
+                                  <td>人民邮电出版社</td>
+                                  <td>2015</td>
+                                  <td class="tbr">F272.9/A32</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">3</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2471556" onclick="savethis(this);"/>11</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2471556" target="_blank">沟通就是要结果：与员工高效沟通的108个技巧</a></span></td>
+                                  <td>文正编著</td>
+                                  <td>人民邮电出版社</td>
+                                  <td>2015</td>
+                                  <td class="tbr">F272.92/W61g</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">2</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2466729" onclick="savethis(this);"/>12</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2466729" target="_blank">沟通的艺术：看入人里，看出人外＝Looking out looking in</a></span></td>
+                                  <td>(美)罗纳德·B. 阿德勒(Ronald B. Adler)，(美)拉塞尔·F. 普罗科特(Russell F. Proctor)著；黄素菲，李恩译</td>
+                                  <td>世界图书出版公司北京公司</td>
+                                  <td>2015</td>
+                                  <td class="tbr">C912.11/A11</td>
+                                  <td class="tbr">2</td>
+                                  <td class="tbr">1</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2550439" onclick="savethis(this);"/>13</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2550439" target="_blank">沟通与礼仪</a></span></td>
+                                  <td>黄漫宇编著</td>
+                                  <td>北京大学出版社</td>
+                                  <td>2014</td>
+                                  <td class="tbr">C912.12-43/H76</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">2</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2488490" onclick="savethis(this);"/>14</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2488490" target="_blank">沟通力：魅力口才与人际交往技巧</a></span></td>
+                                  <td>汇智书源编著</td>
+                                  <td>中国铁道出版社</td>
+                                  <td>2014</td>
+                                  <td class="tbr">C912.11-49/H88</td>
+                                  <td class="tbr">2</td>
+                                  <td class="tbr">1</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2444838" onclick="savethis(this);"/>15</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2444838" target="_blank">沟通心理学＝Psychology of interpersonal communication</a></span></td>
+                                  <td>龙长权，张婷主编</td>
+                                  <td>西南师范大学出版社</td>
+                                  <td>2014</td>
+                                  <td class="tbr">C912.11-43/L79</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">3</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2420432" onclick="savethis(this);"/>16</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2420432" target="_blank">沟通能力培训全案</a></span></td>
+                                  <td>邹晓春编著</td>
+                                  <td>人民邮电出版社</td>
+                                  <td>2014</td>
+                                  <td class="tbr">C912.11/Z94(3)</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">2</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2415761" onclick="savethis(this);"/>17</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2415761" target="_blank">沟通正能量＝Communication of positive energy</a></span></td>
+                                  <td>戴尔·卡耐基著</td>
+                                  <td>北京理工大学出版社</td>
+                                  <td>2014</td>
+                                  <td class="tbr">C912.11/K12</td>
+                                  <td class="tbr">2</td>
+                                  <td class="tbr">1</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2390635" onclick="savethis(this);"/>18</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2390635" target="_blank">沟通的奥秘：专业沟通力成就卓越自我</a></span></td>
+                                  <td>孙科柳，朱丽娜著</td>
+                                  <td>电子工业出版社</td>
+                                  <td>2014</td>
+                                  <td class="tbr">F272/S96c</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">3</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2327499" onclick="savethis(this);"/>19</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2327499" target="_blank">公司财务中的调查研究：沟通财务理论与实践的桥梁 ＝Survey research in corporate finance：bridging the gap between theory and practice</a></span></td>
+                                  <td>(美)H. 肯特·贝克(H. Kent Baker)，(美)J. 克莱·辛格尔顿(J. Clay Singleton)，(美)E. 西奥多·法伊特(E. Theodore Veit)著；</td>
+                                  <td>经济管理出版社</td>
+                                  <td>2013</td>
+                                  <td class="tbr">F276.6/B45c</td>
+                                  <td class="tbr">2</td>
+                                  <td class="tbr">1</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                            <tr>
+                                  <td><input type="checkbox" name="searchresult_cb" value="2270596" onclick="savethis(this);"/>20</td>
+                                  <td><span class="title"><a href="bookinfo.aspx?ctrlno=2270596" target="_blank">沟通交流与口才</a></span></td>
+                                  <td>胡伟, 胡军, 张琳杰编著</td>
+                                  <td>清华大学出版社</td>
+                                  <td>2013</td>
+                                  <td class="tbr">C912.13-43/H53</td>
+                                  <td class="tbr">3</td>
+                                  <td class="tbr">3</td>
+                                  <td>
+                                    
+                                  </td>
+                                 </tr>
+                        
+                             </tbody>
+                            </table>
+                        
+            </div>
+            <div class="pd tbr">第<span class="rf"><span id="ctl00_ContentPlaceHolder1_dplblfl2">1</span></span>/<span id="ctl00_ContentPlaceHolder1_gplblfl2">9</span>页&nbsp;
+                上一页&nbsp;
+                    <a id="ctl00_ContentPlaceHolder1_nexthlfl2" onclick="showpagefl(2)" href="javascript:void(0)">下一页</a>
+                &nbsp;转到第<select name="ctl00$ContentPlaceHolder1$gotoddlfl2" id="ctl00_ContentPlaceHolder1_gotoddlfl2" onchange="showpagefl(this[this.selectedIndex].value)">
+	<option selected="selected" value="1">1</option>
+	<option value="2">2</option>
+	<option value="3">3</option>
+	<option value="4">4</option>
+	<option value="5">5</option>
+	<option value="6">6</option>
+	<option value="7">7</option>
+	<option value="8">8</option>
+	<option value="9">9</option>
+
+</select>页</div>
+        </div>
+            
+            <div class="right">
+            <dl id="searchfacetfl" class="searchfacet">
+                <dt title="只显示符合下列条件的检索结果">缩小范围</dt>
+                <dd>
+                        <a href="javascript:void(0)" onclick="showfacetfl()">
+                        请点击进行分析。</a>
+                </dd>
+            </dl>
+           </div>
+           
+        <div class="clear"></div>
+        
+    </div>
+ </div>
+  <script type="text/javascript">
+    changepoint($('ctl00_ContentPlaceHolder1_searchtypeddl').options[$('ctl00_ContentPlaceHolder1_searchtypeddl').selectedIndex].value);
+    
+        showfacetfl();     
+     
+ </script>
+ 
+<input type="hidden" name="ctl00$ContentPlaceHolder1$ucnavsearchurl" id="ctl00_ContentPlaceHolder1_ucnavsearchurl" value="k=title&amp;v=%b9%b5%cd%a8" />
+  <input type="hidden" name="ctl00$ContentPlaceHolder1$ucnavsearchurlfz" id="ctl00_ContentPlaceHolder1_ucnavsearchurlfz" value="k=title&amp;v=%b9%b5%cd%a8" />
+ </form>
+
+    </div>
+    <!--版权部分-->
+    <div id="footer">
+        <span id="ctl00_footertextlbl">Copyright &copy;2011- SULCMIS OPAC IV of Shenzhen University Library.  All rights reserved.<br />版权所有：深圳大学图书馆 E-mail:szulib@szu.edu.cn</span>
+    </div>
+     
+        <div style="display:none;height:0px;width:0px;">
+            <iframe src="cas/cascheck.aspx?rd=1739185939" style="display:none;height:0px;width:0px;"></iframe>
+        </div>
+    
+</body>
+<script type="text/javascript">islogout()</script>
+</html>
+
+ ?>
