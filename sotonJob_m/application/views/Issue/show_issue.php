@@ -82,7 +82,62 @@ body {
     font-size: 30px;
 }
 </style>
-<body>
+<script type="text/javascript"
+    src="https://maps.google.com/maps/api/js?key=">//set_to_true_or_false
+    // 注意使用的时候要加上key，有疑问找我要 byDeng
+</script>
+<script type="text/javascript">
+function initialize() {
+    var geocoder = new google.maps.Geocoder();
+    // address就是需要填写获取的邮编的地址
+    var address = "<?php echo $data[0]['postcode'];?>";
+    var latitude, longitude;
+    geocoder.geocode({ 'address': address }, function (results, status) {  
+        if (status == google.maps.GeocoderStatus.OK) {  
+            latitude = results[0].geometry.location.lat().toFixed(7);  
+            longitude = results[0].geometry.location.lng().toFixed(7);  
+            console.log("Latitude: " + latitude + "nLongitude: " + longitude);
+            var latlng = new google.maps.LatLng(latitude, longitude);
+            var myOptions = {
+                zoom: 18,
+                center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP//ROADMAP SATELLITE HYBRID TERRAIN
+            };
+            var map = new google.maps.Map(document.getElementById("map_canvas"),
+                myOptions);
+            var marker=new google.maps.Marker({
+                position: latlng,
+            });
+            marker.setMap(map);
+
+
+        }else {  
+            // console.log("Request failed.") 
+    		var address = 'SO17 1BJ';
+    		var latitude, longitude;
+            geocoder.geocode({ 'address': address }, function (results, status) {  
+            latitude = results[0].geometry.location.lat().toFixed(7);  
+            longitude = results[0].geometry.location.lng().toFixed(7);  
+            console.log("Latitude: " + latitude + "nLongitude: " + longitude);
+            var latlng = new google.maps.LatLng(latitude, longitude);
+            var myOptions = {
+                zoom: 18,
+                center: latlng,
+                mapTypeId: google.maps.MapTypeId.ROADMAP//ROADMAP SATELLITE HYBRID TERRAIN
+            };
+            var map = new google.maps.Map(document.getElementById("map_canvas"),
+                myOptions);
+            var marker=new google.maps.Marker({
+                position: latlng,
+            });
+            marker.setMap(map);
+        	})
+        }  
+    }); 
+}
+
+</script>
+<body onload="initialize()">
 <div class="head">
         Issues Details 
     </div>
@@ -95,12 +150,21 @@ body {
 </header>
 <div id="content">
         <div class="post">
+        	<!-- <?php var_dump($data); ?> -->
+	<?php var_dump( $data[0]['postcode']);?>
+
+
             <h5 class="title"><?php echo $data[0]['title']; ?></h5>
             <h8 class="posted">Submit Time: <?php echo date("Y-m-d",$data[0]['submitTime']) ?></h8>
             <div class="story">
                 <p><?php echo $data[0]['content'];?></p>
             </div>
         </div>
+        <!-- 地图 -->
+
+        <div id="map_canvas" style="width:400px; height:300px; margin: 0 auto"></div>
+
+        <!-- 地图 -->
         <div class="posta" >
 
             <h1 >Verification State</h1>

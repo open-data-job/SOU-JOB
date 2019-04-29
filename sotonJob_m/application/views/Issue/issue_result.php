@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>My Job</title>
+	<title>My Issue</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-	<link href="<?php echo base_url('public/Job/css/icono.min.css') ?>" rel="stylesheet">
-	<link href="<?php echo base_url('public/Job/css/common.min.css') ?>" rel="stylesheet">
+	<link href="<?php echo base_url('public/Issue/css/icono.min.css') ?>" rel="stylesheet">
+	<link href="<?php echo base_url('public/Issue/css/common.min.css') ?>" rel="stylesheet">
 	<style >
 	#container{
     padding-top:50px;
@@ -124,12 +124,12 @@
 </head>
 
 <body><div class="head">
-        My Job
+        My Issue
     </div>
 	   <div class="page">
             <?php for ($i=0; $i <count($data) ; $i++) {  ?>
                 <div class="item">
-                    <a href=<?php echo base_url('Job/show/') . $data[$i]['id']; ?>>
+                    <a href=<?php echo base_url('Issue/show/') . $data[$i]['id']; ?>>
                         <i class="icono-mail" ></i><p class="title"><?php echo $data[$i]['title']; ?></p>
                     <p class="title">
                         <?php
@@ -149,7 +149,7 @@
 
 	<?php if(count($data)==0) {?>
 		<div class="msg_container">
-				<span class="title">No Job</span>
+				<span class="title">No Issue</span>
 		</div>
 	<?php } ?>
 
