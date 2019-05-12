@@ -10,6 +10,63 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
+    body {background-color: #f4f8fb;}
+	.navbar-soujob {
+		background-color:#3097d1;
+	}
+	.navbar-soujob
+ .navbar-toggle:hover
+ {
+ 	background-color: #ffe184;
+ }
+ 
+ .navbar-soujob
+ .navbar-toggle
+ {
+ 	border-color:#ffffff;
+ }
+ 
+ .navbar-soujob .navbar-nav>li>a {
+    color: #fff;
+}
+
+.index-navbar-nav>li>a 
+{
+	padding:15px 20px 15px 20px;
+    margin:0 5px 0 5px;
+}
+
+.navbar-right>ul>li>.active
+{
+	color: #ffe184;
+}
+
+	.navbar-fixed-top
+{
+	border-width: 0;
+}
+	.vertical-center {
+            min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+            min-height: 100vh; /* These two lines are counted as one :-)       */
+
+            display: flex;
+            align-items: center;
+        }
+    .navbar .nav > li {margin-top: 15px; font-size: 15px;}
+	.navbar .nav > li > .loginBtn {padding-right: 0px;}
+	.navbar .nav > li > .signupBtn {padding-left: 0px;padding-right: 0px;}
+	.navbar .nav > li > .adminBtn {padding-left: 20px; font-size:12px}
+	.navbar .nav > li > .slash {padding-left: 2px; padding-right: 2px; padding-top: 15px; padding-bottom: 15px;}
+	footer{
+			text-align: center;
+			color: #999;
+			font-size: 12px;
+			padding-top: 15px;
+		}
+    .current {text-align: center;color: #337ab7;}
+    .jobBtn {text-align:center;margin: auto; padding-top: 30px;color: #fff;}
+	.lfJob {background-color:#3670D1;padding-left: 15px; padding-right: 15px;width:60%;height:150px;border-radius: 10px;margin: auto;}
+	.ofJob {Margin-top: 30px;}
 html,body{
     background: rgb(240,240,240);
     font-size: 14px;
@@ -109,12 +166,12 @@ html,body{
 
     overflow: hidden;
     text-overflow: ellipsis;
-    display: -webkit-box;-webkit-line-clamp: 1;-webkit-box-orient: vertical;
+    display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;
 
-    font-size: 16px;
-    line-height: 22px;
+    font-size: 14px;
+    line-height: 18px;
     font-weight: 400;
-        color: #fff
+    color: #50868A;
 }
 .box{
         display: inline-block;
@@ -139,10 +196,25 @@ html,body{
 
 
 .done{
-    color: #fff;
+    color: #3670D1;
+    font-size: 12px;
 }
 .undone{
     color: #f45757;
+    font-size: 12px;
+}
+.datefont {
+    display: inline-block;
+   padding-left:5px;
+
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;
+
+    font-size: 12px;
+    line-height: 18px;
+    font-weight: 400;
+    color: #6D858A;
 }
 
 .item{
@@ -152,7 +224,7 @@ html,body{
         width: 37%;
         height: 37vw; 
         box-sizing:border-box;
-        background-color: #9e9e9e;
+        background-color: #fff;
         
         display: flex;
         justify-content: center;
@@ -160,7 +232,10 @@ html,body{
         border-radius: 5px;
         cursor: pointer;
         padding: 0 10px;
-    }.page{
+        border: 1px solid #ddd;
+        line-height: 1.4;
+    }
+    .page{
         display: flex;
         flex-wrap: wrap;
         justify-content: flex-start;
@@ -181,9 +256,35 @@ html,body{
 </head>
 
 <body>
+
+<!--Navigation Bar-->
+<nav class="navbar navbar-default navbar-soujob">
+        <div class="container-fluid">
+            <div class="navbar-header">
+            <!--Collapsing Menu Button-->
+            <!--Navigation Bar Logo-->
+            <span class="navbar-brand" style="color: #fff">Southampton Jobs</span>  
+        </div>
+            <!--Navigation Bar Items-->
+            
+                    <div class="navbar-right">
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a class="loginBtn" href="<?php echo base_url('bind') ?>" style="display: inline;">Login</a>
+                                <a class="slash" style="display: inline;">/</a>
+                                <a class="signupBtn" a href="<?php echo base_url('Bind/logout') ?>" style="display: inline;">Logout</a>
+                                <a class="adminBtn" href="<?php echo base_url('admin/bkmain') ?>" style="display: inline;"><span class="glyphicon glyphicon-user"></span> Admin Login</a>
+                            </li>
+                        </ul>
+                    </div>
+            
+        </div>
+</nav><!--Navigation Bar-->
+
     <div class="head">
         SoJ Issue
     </div>
+    <!--Search Bar-->
     <div class="container"><div class="panel-body" >
         <div class="panel-body" >
             <form action="<?php echo base_url('Issue/search') ?>" method="post">
@@ -196,20 +297,24 @@ html,body{
                     </div> 
                 <div class="form-group">
                         <div style="text-align:center">
-                            <input id="search" type="submit" value="Search Issue" class="btn btn-primary" 
-                            />
+                            <input id="search" type="submit" value="Search Issue" class="btn btn-primary" />
                         </div> 
                 </div>
             </form>
         </div>
     </div>
+    <!--Search Bar-->
+
+    <!--Overflow Buttons-->
     <a href="<?php echo base_url('Issue/my_Issue') ?>" class="sc"><span class="icono-user"></span></a>
-	<a href="<?php echo base_url('Issue/add') ?>"><span class="icono-plus"></span></a>
+    <a href="<?php echo base_url('Issue/add') ?>"><span class="icono-plus"></span></a>
+    <!--Overflow Buttons-->
+
 	<div class="page">
 			<?php for ($i=0; $i <count($data) ; $i++) {  ?>
 				<div class="item">
 					<a href=<?php echo base_url('Issue/show/') . $data[$i]['id']; ?>>
-						<i class="icono-mail" ></i><p class="title"><?php echo $data[$i]['title']; ?></p>
+						<p class="title"><?php echo $data[$i]['title']; ?></p>
 					<p class="title">
                         <?php
                             if ($data[$i]['checked']==1)
@@ -217,12 +322,27 @@ html,body{
                                     else
                                 echo "<span class=\"undone\">Unchecked</span>";
                             // echo $data[$i]['content'];
-                            echo "<p class=\"title\" >". $data[$i]['submitTime']."</p>";
+                            echo "<p class=\"datefont\" >". $data[$i]['submitTime']."</p>";
                         ?>
-					</p></a>
+                    </p>
+                    </a>
 				</div>
-				<?php } ?>
-	</div>
-    <div><?php echo $this->pagination->create_links();  ?></div>
+			<?php } ?>
+    </div>
+    
+<nav>
+  <ul class="pagination">
+  <?php echo $this->pagination->create_links();  ?>
+  </ul>
+</nav>
+
+    <footer class="nav navbar-default">
+        <div class="container">
+            <div class="footerContent">
+            <p>COMP6214 - Open Data Innovation</p>
+            <p>Team 10 2018/19</p>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

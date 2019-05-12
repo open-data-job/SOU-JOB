@@ -7,7 +7,7 @@
 <script language="javascript" src="<?php echo base_url('public/static/jquery-1.8.2.min.js') ?>"></script>
     <style>
         .bg {
-            background-color:#999 /*此处更换为所需的颜色代码*/
+            background-color:#f4f8fb /*此处更换为所需的颜色代码*/
         }
     </style>
 </head>
@@ -15,8 +15,8 @@
 <div class="bg">
 <div class="container">
     <div style="width:90%; margin: 0 auto;padding: 10% 0;">
-        <div class="panel panel-info">
-            <div class="panel-heading" style="background-color:#42deb8">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
                 <div class="text-center">
                     <h3>Register</h3>
                 </div>
