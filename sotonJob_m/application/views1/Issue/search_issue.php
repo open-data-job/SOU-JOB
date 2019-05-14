@@ -11,6 +11,7 @@
 
 <style>
 html,body{
+    background: rgb(240,240,240);
     font-size: 14px;
     line-height: 1.6;
     word-wrap: break-word;
@@ -108,12 +109,12 @@ html,body{
 
     overflow: hidden;
     text-overflow: ellipsis;
-    display: -webkit-box;-webkit-line-clamp: 3;-webkit-box-orient: vertical;
+    display: -webkit-box;-webkit-line-clamp: 1;-webkit-box-orient: vertical;
 
-    font-size: 14px;
-    line-height: 18px;
+    font-size: 16px;
+    line-height: 22px;
     font-weight: 400;
-    color: #50868A;
+        color: #fff
 }
 .box{
         display: inline-block;
@@ -138,20 +139,20 @@ html,body{
 
 
 .done{
-    color: #3670D1;
+    color: #fff;
 }
 .undone{
     color: #f45757;
 }
 
 .item{
-    border-right: 2px solid #ddd;
+        border-right: 2px solid #ddd;
         border-bottom: 2px solid #ddd;
         flex: 0 0 33.33%;
-        width: 37%;
-        height: 37vw; 
+        width: 50%;
+        height: 50vw; 
         box-sizing:border-box;
-        background-color: #fff;
+        background-color: #9e9e9e;
         
         display: flex;
         justify-content: center;
@@ -159,8 +160,6 @@ html,body{
         border-radius: 5px;
         cursor: pointer;
         padding: 0 10px;
-        border: 1px solid #ddd;
-        line-height: 1.4;
     }.page{
         display: flex;
         flex-wrap: wrap;
@@ -174,90 +173,14 @@ html,body{
         text-align: center;
         padding: 10px 0;
         font-weight: bold;
-        color: rgba(62, 57, 57, 0.92);   
+        color: rgba(62, 57, 57, 0.92);
+        
     }
-    body {background-color: #f4f8fb;}
-	.navbar-soujob {
-		background-color:#3097d1;
-	}
-	.navbar-soujob
- .navbar-toggle:hover
- {
- 	background-color: #ffe184;
- }
- 
- .navbar-soujob
- .navbar-toggle
- {
- 	border-color:#ffffff;
- }
- 
- .navbar-soujob .navbar-nav>li>a {
-    color: #fff;
-}
-
-.index-navbar-nav>li>a 
-{
-	padding:15px 20px 15px 20px;
-    margin:0 5px 0 5px;
-}
-
-.navbar-right>ul>li>.active
-{
-	color: #ffe184;
-}
-
-	.navbar-fixed-top
-{
-	border-width: 0;
-}
-	.vertical-center {
-            min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
-            min-height: 100vh; /* These two lines are counted as one :-)       */
-
-            display: flex;
-            align-items: center;
-		}
-	.navbar .nav > li {margin-top: 15px; font-size: 15px;}
-	.navbar .nav > li > .loginBtn {padding-right: 0px;}
-	.navbar .nav > li > .signupBtn {padding-left: 0px;padding-right: 0px;}
-	.navbar .nav > li > .adminBtn {padding-left: 20px; font-size:12px}
-	.navbar .nav > li > .slash {padding-left: 2px; padding-right: 2px; padding-top: 15px; padding-bottom: 15px;}
-	footer{
-			text-align: center;
-			color: #999;
-			font-size: 12px;
-			padding-top: 15px;
-		}
 </style>
 
 </head>
 
 <body>
-    <!--Navigation Bar-->
-<nav class="navbar navbar-default navbar-soujob">
-        <div class="container-fluid">
-            <div class="navbar-header">
-            <!--Collapsing Menu Button-->
-            <!--Navigation Bar Logo-->
-            <span class="navbar-brand" style="color: #fff">Southampton Jobs</span>  
-        </div>
-            <!--Navigation Bar Items-->
-            
-                    <div class="navbar-right">
-                            <ul class="nav navbar-nav">
-                                    <li>
-										<a class="loginBtn" href="<?php echo base_url('bind') ?>" style="display: inline;">Login</a>
-										<a class="slash" style="display: inline;">/</a>
-										<a class="signupBtn" a href="<?php echo base_url('Bind/logout') ?>" style="display: inline;">Logout</a>
-										<a class="adminBtn" href="<?php echo base_url('admin/bkmain') ?>" style="display: inline;"><span class="glyphicon glyphicon-user"></span> Admin Login</a>
-									</li>
-                            </ul>
-                    </div>
-            
-        </div>
-</nav><!--Navigation Bar-->
-
     <input class="keyword" type="hidden" id='url' value="<?php echo base_url('issue/api_GetList') ?>"/>
     <div class="head">
         Search Issues
@@ -301,29 +224,20 @@ html,body{
                         for (var i = 0; i < result.length; i++) {
                             str_html += "<div class='msg_container'><a href='<?php echo base_url('issue/show/') ?>" + result[i]['id'] + "'><span class='title'>" + result[i]['title'] + "</span><p class='box'>";
                             if (result[i]['checked'] == 1)
-                                str_html += "<span class='done'>Checked</span>";
+                                str_html += "<span class='done'>【已回复】</span>";
                             else
-                                str_html += "<span class='undone'>Uncheck</span>";
+                                str_html += "<span class='undone'>【未回复】</span>";
                             str_html += result[i]['content'] + "<span class='time'>" + result[i]['submitTime'] + "</span>   </p></a></div>";
                         }
                         $("#container").append(str_html);
                     });
                 }
                 else{
-                    alert("It is too far!");
+                    alert("太遥远啦～");
                 }
             }
         });
     });
 </script>
-
-<footer class="nav navbar-default">
-        <div class="container">
-            <div class="footerContent">
-            <p>COMP6214 - Open Data Innovation</p>
-            <p>Team 10 2018/19</p>
-            </div>
-        </div>
-    </footer>
 </body>
 </html>
