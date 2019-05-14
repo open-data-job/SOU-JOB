@@ -9,7 +9,7 @@ the coursework 2 of comp6214
 
 How to run this project:
 
-1, First you might need to install the WAMP so that you can get the active apche, MySQL, PHP. Then you can put this Web project "sotonJob_m" into the target dir and run it though WAMP. 
+1, First you might need to install the WAMP (under the Window system) so that you can get the active apche, MySQL, PHP. Then you can put this Web project "sotonJob_m" into the target dir and run it though WAMP. 
 Usually the traget dir in WAMP is the "\wamp64\www" 
 
 2, To input the data into the MySQL, you might need to run the "soujob.sql" document. 
