@@ -9,7 +9,7 @@ the coursework 2 of comp6214
 
 How to run this project:
 
-1, First you might need to install the WAMP so that you can get the active apche, MySQL, PHP.
+1, First you might need to install the WAMP so that you can get the active apche, MySQL, PHP. Then you can put this project into the target dir and run it though WAMP.
 
 2, To input the data into the MySQL, you might need to run the .sql document and then get the data.
 
