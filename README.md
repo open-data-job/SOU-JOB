@@ -8,6 +8,9 @@ the coursework 2 of comp6214
 5, the backestage management system.
 
 How to run this project:
+
 1, First you might need to install the WAMP so that you can get the active apche, MySQL, PHP.
+
 2, To input the data into the MySQL, you might need to run the .sql document and then get the data.
+
 3, The default username and password are "111", which can help you to enter the system.
